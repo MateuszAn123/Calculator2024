@@ -19,12 +19,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="m_string.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="m_stack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
 </Project>

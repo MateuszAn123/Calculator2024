@@ -2,17 +2,17 @@
 #include<cstdlib>
 using namespace std;
 
-class Node {
+
+
+template <typename T>class Node {
 public:
-	int data;
 	Node* next;
-	bool isNumber;
+	Node* previous;
+	T data;
 	// Constructor
-	Node(const int newData, Node* nextNode = nullptr, bool isNumber = false) : data(newData), next(nextNode), isNumber(isNumber) {
+	Node(const T newData, Node* nextNode = nullptr) : data(newData), next(nextNode) {
 	}
 };
-
-
 
 class LinkedList {
 private:
@@ -20,23 +20,10 @@ private:
 public:
 	LinkedList() {
 		NewNode = nullptr;
-		cout << "eloelo";
 	}
 
 	void append(int value) {
-		Node* newNode = new Node(value);
-		if (NewNode == nullptr) 
-		{
-			NewNode = newNode;
-			return;
-		}
-
-		Node* temp = NewNode;
-		while (temp->next != nullptr) 
-		{
-			temp = temp->next;
-		}
-		temp->next = newNode;
+		
 	}
 
 	void remove(int value) {
@@ -64,7 +51,7 @@ public:
 
 	void Print() {
 		Node* temp = NewNode;
-		while (temp != nullptr) 
+		while (temp != nullptr)
 		{
 			cout << temp->data << " ";
 			temp = temp->next;
@@ -73,12 +60,41 @@ public:
 	}
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-class Stack {
+template <typename T> class LinkedList {
 private:
-	Node* topNode;
+	Node<T>* head;
+	Node<T>* tail;
+public:
+	LinkedList() {
+	}
+
+	void append(const T& value) {
+		Node<T>* newNode = new Node(value);
+		if (NewNode == nullptr)
+		{
+			NewNode = newNode;
+			return;
+		}
+
+		Node* temp = NewNode;
+		while (temp->next != nullptr)
+		{
+			temp = temp->next;
+		}
+		temp->next = newNode;
+	}
+	void remove_last() {}
+	void remove_first() {}
+	void Print() {}
+};
+
+
+template <typename T> class Stack {
+private:
+	Node<T>* topNode;
+	int n_elems = 0;
 
 public:
 	Stack() : topNode(nullptr) {
@@ -89,15 +105,17 @@ public:
 		}
 	}
 
-	void push(const int newData, bool isNumber) {
-		Node* newNode = new Node(newData, topNode,isNumber);
+	void push(const T& newData) {
+		Node<T>* newNode = new Node(newData, topNode);
 		topNode = newNode;
+		++n_elems;
 	}
 
 	// Pop element from the stack
 	void pop() {
+		--n_elems;
 		if (!isEmpty()) {
-			Node* temp = topNode;
+			Node<T>* temp = topNode;
 			topNode = topNode->next;;
 		}
 		else {
@@ -106,9 +124,9 @@ public:
 	}
 
 	// Return the top element of the stack
-	int top() {
+	T* top() {
 		if (!isEmpty()) {
-			return topNode->data;
+			return &(topNode->data);
 		}
 		else {
 			cout << "Error: Stack is empty. Cannot access top element.\n";
@@ -122,7 +140,8 @@ public:
 	}
 
 	void Print() {
-		Node* temp = topNode;
+		Node<T>* temp = topNode;
+		cout << "Numer of elements: " << n_elems << endl;
 		while (temp != nullptr)
 		{
 			cout << temp->data << " ";
@@ -131,6 +150,15 @@ public:
 		cout << endl;
 	}
 };
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 
 bool NumberOrOperator(char token)
 {
@@ -146,8 +174,8 @@ bool NumberOrOperator(char token)
 void jakies_sprawdzenie() {}
 
 int main() {
-	LinkedList list;
-	Stack stack;
+	LinkedList<T> list;
+	Stack<T> stack;
 	int number_of_formulas;
 	int i = 0;
 	char token[12];
@@ -155,34 +183,7 @@ int main() {
 	cin >> number_of_formulas;
 	while (i < number_of_formulas)
 	{
-		cin >> token;
-		if (NumberOrOperator(token[0]) == true)	{
-			token_in_int = atoi(token);
-			list.append(token_in_int);
-			
-		}
-		else
-		{
-			switch (token[0]) {
-			case '.':
-				i++;
-			case '+':
-				stack.push(token[0], false);
-			case '-':
-				stack.push(token[0], false);
-			case '*':
-				stack.push(token[0], false);
-			case '/':
-				stack.push(token[0], false);
-			}	
-		}
 	}
-
-	//TOD
-	jakies_sprawdzenie();
-	list.Print();
-	cout << endl;
-	stack.Print();
 
 	return 0;
 }
