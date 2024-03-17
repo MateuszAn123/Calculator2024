@@ -1,84 +1,107 @@
-#include<iostream>
+﻿#include<iostream>
 #include<cstdlib>
+
+#define MAX_INT_LENGTH 11
+
 using namespace std;
 
-class Node {
+enum operatorType {MAX, MIN, IF, N, ADD, SUB, DIV, MUL};
+
+class MyOperator{
 public:
-	int data;
+	operatorType operator_type;
+	int n_numbers;
+	MyOperator(char txt[3]): n_numbers(0){
+		if(txt == "MAX"){
+			operator_type = MAX;
+		}else if (txt == "MIN")
+		{
+			operator_type = MIN;
+		}else if (txt == "*")
+		{
+			operator_type = MUL;
+			n_numbers = 2;
+		}
+		//////////////////////////////////////////////////////////////////////////////////////
+	}
+};
+
+
+class Token{
+public:
+	int number = 0;
+	MyOperator *_operator = nullptr;
+	Token(char txt[MAX_INT_LENGTH]){
+		if (isNumber(txt[0])){
+			number = atoi(txt);
+		}
+		else
+		{
+			_operator = new MyOperator(txt);
+		}
+	}
+
+	bool isNumber(char token)
+	{
+		if (token <= '9' && token >= '0')
+			return true;
+		else
+			return false;
+	}
+
+	friend ostream& operator<<(ostream& os, const Token& t);
+};
+
+ostream& operator<<(ostream& os, const Token& t)
+{
+	if(t._operator == nullptr){
+		os << t.number;
+	}else{
+		os << t._operator->operator_type;
+	}
+	
+    return os;
+}	
+
+//dostępne operatory -> MIN, MAX, N, IF, *, /, +, -
+
+
+template <typename T>class Node {
+public:
 	Node* next;
-	bool isNumber;
+	Node *previous;
+	T data;
 	// Constructor
-	Node(const int newData, Node* nextNode = nullptr, bool isNumber = false) : data(newData), next(nextNode), isNumber(isNumber) {
+	Node(const T newData, Node* nextNode = nullptr) : data(newData), next(nextNode) {
 	}
 };
 
 
 
-class LinkedList {
+template <typename T> class LinkedList {
 private:
-	Node* NewNode;
+	Node<T> *head;
+	Node<T> *tail;
 public:
 	LinkedList() {
-		NewNode = nullptr;
-		cout << "eloelo";
 	}
 
-	void append(int value) {
-		Node* newNode = new Node(value);
-		if (NewNode == nullptr) 
-		{
-			NewNode = newNode;
-			return;
-		}
-
-		Node* temp = NewNode;
-		while (temp->next != nullptr) 
-		{
-			temp = temp->next;
-		}
-		temp->next = newNode;
+	void append(const T &newData) {
+		Node<T>*  newNode = new Node(newData, topNode);
+		topNode = newNode;
+		++n_elems;
+		delete newNode;
 	}
-
-	void remove(int value) {
-		Node* temp = NewNode;
-		Node* prev = nullptr;
-
-		while (temp != nullptr && temp->data != value) {
-			prev = temp;
-			temp = temp->next;
-		}
-
-		if (temp == nullptr) {
-			cout << "Element not found in the list." << endl;
-			return;
-		}
-
-		if (prev == nullptr) {
-			NewNode = temp->next;
-		}
-		else {
-			prev->next = temp->next;
-		}
-		delete temp;
-	}
-
-	void Print() {
-		Node* temp = NewNode;
-		while (temp != nullptr) 
-		{
-			cout << temp->data << " ";
-			temp = temp->next;
-		}
-		cout << endl;
-	}
+	void remove_last() {}
+	void remove_first() {}
+	void Print() {}
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-class Stack {
+template <typename T> class Stack {
 private:
-	Node* topNode;
+	Node<T> *topNode;
+	int n_elems = 0;
 
 public:
 	Stack() : topNode(nullptr) {
@@ -89,15 +112,17 @@ public:
 		}
 	}
 
-	void push(const int newData, bool isNumber) {
-		Node* newNode = new Node(newData, topNode,isNumber);
+	void push(const T &newData) {
+		Node<T>*  newNode = new Node(newData, topNode);
 		topNode = newNode;
+		++n_elems;
 	}
 
 	// Pop element from the stack
 	void pop() {
+		--n_elems;
 		if (!isEmpty()) {
-			Node* temp = topNode;
+			Node<T>*  temp = topNode;
 			topNode = topNode->next;;
 		}
 		else {
@@ -106,9 +131,9 @@ public:
 	}
 
 	// Return the top element of the stack
-	int top() {
+	T* top() {
 		if (!isEmpty()) {
-			return topNode->data;
+			return &(topNode->data);
 		}
 		else {
 			cout << "Error: Stack is empty. Cannot access top element.\n";
@@ -122,7 +147,8 @@ public:
 	}
 
 	void Print() {
-		Node* temp = topNode;
+		Node<T>* temp = topNode;
+		cout << "Numer of elements: " << n_elems << endl;
 		while (temp != nullptr)
 		{
 			cout << temp->data << " ";
@@ -132,57 +158,20 @@ public:
 	}
 };
 
-bool NumberOrOperator(char token)
-{
-	if (token <= '9' && token >= '0')
-		return true;
-	else
-		return false;
+
+bool testStack() {
+
 }
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void jakies_sprawdzenie() {}
+bool testList()
+{}
 
 int main() {
-	LinkedList list;
-	Stack stack;
-	int number_of_formulas;
-	int i = 0;
-	char token[12];
-	int token_in_int;
-	cin >> number_of_formulas;
-	while (i < number_of_formulas)
-	{
-		cin >> token;
-		if (NumberOrOperator(token[0]) == true)	{
-			token_in_int = atoi(token);
-			list.append(token_in_int);
-			
-		}
-		else
-		{
-			switch (token[0]) {
-			case '.':
-				i++;
-			case '+':
-				stack.push(token[0], false);
-			case '-':
-				stack.push(token[0], false);
-			case '*':
-				stack.push(token[0], false);
-			case '/':
-				stack.push(token[0], false);
-			}	
-		}
-	}
+	LinkedList<Token> list;
+	Stack<Token> stack;
 
-	//TOD
-	jakies_sprawdzenie();
-	list.Print();
-	cout << endl;
-	stack.Print();
+	testStack();
+	testList();
 
 	return 0;
 }
