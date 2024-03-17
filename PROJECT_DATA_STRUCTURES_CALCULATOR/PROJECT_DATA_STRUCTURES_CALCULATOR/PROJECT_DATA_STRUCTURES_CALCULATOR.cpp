@@ -20,6 +20,7 @@ private:
 public:
 	LinkedList() {
 		NewNode = nullptr;
+		cout << "eloelo";
 	}
 
 	void append(int value) {
