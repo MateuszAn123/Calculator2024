@@ -143,6 +143,7 @@ bool NumberOrOperator(char token)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void jakies_sprawdzenie() {}
 
 int main() {
 	LinkedList list;
@@ -176,6 +177,9 @@ int main() {
 			}	
 		}
 	}
+
+	//TOD
+	jakies_sprawdzenie();
 	list.Print();
 	cout << endl;
 	stack.Print();
