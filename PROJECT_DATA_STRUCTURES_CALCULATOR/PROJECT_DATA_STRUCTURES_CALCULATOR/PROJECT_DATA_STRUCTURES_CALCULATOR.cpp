@@ -1,56 +1,140 @@
-#include<iostream>
+﻿#include<iostream>
 #include<cstdlib>
+
+#define MAX_INT_LENGTH 10
+
 using namespace std;
 
+enum operatorType {MAX, MIN, IF, N, ADD, SUB, DIV, MUL};
+
+class MyOperator{
+public:
+	operatorType operator_type;
+	int n_numbers;
+	MyOperator(char txt[3]): n_numbers(0){
+		if(txt == "MAX"){
+			operator_type = MAX;
+		}else if (txt == "MIN")
+		{
+			operator_type = MIN;
+		}else if (txt == "*")
+		{
+			operator_type = MUL;
+			n_numbers = 2;
+		}
+		//////////////////////////////////////////////////////////////////////////////////////
+	}
+};
+
+
+class Token{
+public:
+	int number = 0;
+	MyOperator *_operator = nullptr;
+	bool isNumber(char token)
+	{
+		if (token <= '9' && token >= '0')
+			return true;
+		else
+			return false;
+	}
+
+	Token(char txt[MAX_INT_LENGTH]){
+		if (isNumber(txt[0])){
+			number = atoi(txt);
+		}
+		else
+		{
+			_operator = new MyOperator(txt);
+		}
+	}
+
+	friend ostream& operator<<(ostream& os, const Token& t);
+};
+
+ostream& operator<<(ostream& os, const Token& t)
+{
+	if(t._operator == nullptr){
+		os << t.number;
+	}else{
+		os << t._operator->operator_type;
+	}
+	
+    return os;
+}	
+
+//dostępne operatory -> MIN, MAX, N, IF, *, /, +, -
 
 
 template <typename T>class Node {
 public:
 	Node* next;
-	Node* previous;
+	Node *previous;
 	T data;
 	// Constructor
-	Node(const T newData, Node* nextNode = nullptr) : data(newData), next(nextNode) {
+	Node(const T newData, Node* nextNode = nullptr, Node* prevNode = nullptr) : data(newData), next(nextNode),previous(prevNode) {
 	}
 };
 
-class LinkedList {
+template <typename T> class LinkedList {
 private:
-	Node* NewNode;
+	Node<T> *head;
+	Node<T> *tail;
+	int number_elements = 0;
 public:
-	LinkedList() {
-		NewNode = nullptr;
+	LinkedList() : head(nullptr), tail(nullptr){
 	}
 
-	void append(int value) {
-		
-	}
-
-	void remove(int value) {
-		Node* temp = NewNode;
-		Node* prev = nullptr;
-
-		while (temp != nullptr && temp->data != value) {
-			prev = temp;
-			temp = temp->next;
+	void append(const T &newData) {
+		++number_elements;
+		Node<T>* newNode = new Node<T>(newData);
+		if (!head) {
+			head = newNode; 
+			tail = newNode; 
+		} 
+		else {
+			tail->next = newNode;
+			newNode->previous = tail;
+			tail = newNode;
 		}
+		delete newNode;
+	}
+	void remove_last() {
+		--number_elements;
 
-		if (temp == nullptr) {
-			cout << "Element not found in the list." << endl;
+		if (!head) // Empty list
 			return;
-		}
-
-		if (prev == nullptr) {
-			NewNode = temp->next;
+		else if (head == tail) { // Only one element
+			delete tail;
+			head = nullptr;
+			tail = nullptr;
 		}
 		else {
-			prev->next = temp->next;
-		}
-		delete temp;
-	}
+			tail = tail->previous;
+			tail->next = nullptr;
+			delete tail;
 
+		}
+	}
+	void remove_first() {
+		--number_elements;
+
+		if (!head) // Empty list
+			return;
+		else if (head == tail) { // Only one element
+			delete head;
+			head = nullptr;
+			tail = nullptr;
+		}
+		else {
+			head = head->next;
+			head->previous = nullptr;
+			delete head;
+		}
+	}
 	void Print() {
-		Node* temp = NewNode;
+		Node<T>* temp = head;
+		cout << "Numer of elements list : " << number_elements << endl;
 		while (temp != nullptr)
 		{
 			cout << temp->data << " ";
@@ -61,39 +145,9 @@ public:
 };
 
 
-
-template <typename T> class LinkedList {
-private:
-	Node<T>* head;
-	Node<T>* tail;
-public:
-	LinkedList() {
-	}
-
-	void append(const T& value) {
-		Node<T>* newNode = new Node(value);
-		if (NewNode == nullptr)
-		{
-			NewNode = newNode;
-			return;
-		}
-
-		Node* temp = NewNode;
-		while (temp->next != nullptr)
-		{
-			temp = temp->next;
-		}
-		temp->next = newNode;
-	}
-	void remove_last() {}
-	void remove_first() {}
-	void Print() {}
-};
-
-
 template <typename T> class Stack {
 private:
-	Node<T>* topNode;
+	Node<T> *topNode;
 	int n_elems = 0;
 
 public:
@@ -105,9 +159,9 @@ public:
 		}
 	}
 
-	void push(const T& newData) {
-		Node<T>* newNode = new Node(newData, topNode);
-		topNode = newNode;
+	void push(const T &newData) {
+		Node<T>*  newNode = new Node(newData, topNode);
+		topNode = newNode->next;
 		++n_elems;
 	}
 
@@ -115,7 +169,7 @@ public:
 	void pop() {
 		--n_elems;
 		if (!isEmpty()) {
-			Node<T>* temp = topNode;
+			Node<T>*  temp = topNode;
 			topNode = topNode->next;;
 		}
 		else {
@@ -141,7 +195,7 @@ public:
 
 	void Print() {
 		Node<T>* temp = topNode;
-		cout << "Numer of elements: " << n_elems << endl;
+		cout << "Number of elements: " << n_elems << endl;
 		while (temp != nullptr)
 		{
 			cout << temp->data << " ";
@@ -153,37 +207,27 @@ public:
 
 
 
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-bool NumberOrOperator(char token)
-{
-	if (token <= '9' && token >= '0')
-		return true;
-	else
-		return false;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void jakies_sprawdzenie() {}
-
 int main() {
-	LinkedList<T> list;
-	Stack<T> stack;
-	int number_of_formulas;
-	int i = 0;
-	char token[12];
-	int token_in_int;
-	cin >> number_of_formulas;
-	while (i < number_of_formulas)
+	LinkedList<Token> list;
+	Stack<Token> stack;
+
+	int how_many = 4;
+	char input[9];
+	for (int i = 0; i < 6; i++)
 	{
+		cin >> input;
+		Token *t = new Token(input);
+
+		stack.push(*t);
+		if (i == 4)
+		{
+			stack.Print();
+			stack.pop();
+			stack.pop();
+		}	
 	}
+	stack.Print();
+
 
 	return 0;
 }
