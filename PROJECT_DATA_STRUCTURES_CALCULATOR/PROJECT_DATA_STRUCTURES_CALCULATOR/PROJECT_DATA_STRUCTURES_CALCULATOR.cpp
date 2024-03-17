@@ -1,30 +1,97 @@
 ﻿#include<iostream>
 #include<cstdlib>
+#include<cstring>
 
 #define MAX_INT_LENGTH 10
 
 using namespace std;
 
-enum operatorType {MAX, MIN, IF, N, ADD, SUB, DIV, MUL};
+
+
+
+enum operatorType {ADD, SUB, DIV, MUL, N, IF, MAX, MIN};
 
 class MyOperator{
 public:
 	operatorType operator_type;
 	int n_numbers;
 	MyOperator(char txt[3]): n_numbers(0){
-		if(txt == "MAX"){
+		if(compare_char(txt, "MAX",3) == 1){
 			operator_type = MAX;
-		}else if (txt == "MIN")
+		}else if (compare_char(txt, "MIN",3) == 1)
 		{
 			operator_type = MIN;
-		}else if (txt == "*")
+		}else if (compare_char(txt, "*",1) == 1)
 		{
 			operator_type = MUL;
 			n_numbers = 2;
+		}else if (compare_char(txt, "+",1) == 1)
+		{
+			operator_type = ADD;
+			n_numbers = 2;
+		}else if (compare_char(txt, "-",1) == 1)
+		{
+			operator_type = SUB;
+			n_numbers = 2;
+		}else if (compare_char(txt, "/",1) == 1)
+		{
+			operator_type = DIV;
+			n_numbers = 2;
 		}
-		//////////////////////////////////////////////////////////////////////////////////////
+		else if (compare_char(txt, "IF",2) == 1)
+		{
+			operator_type = IF;
+			n_numbers = 3;
+		}
+		else if (compare_char(txt, "N", 1) == 1)
+		{
+			operator_type = N;
+			n_numbers = 1;
+		}else{
+			cout << "nie wykryto zadnego operatora\n";
+		}
+		//cout << operator_type << endl;
 	}
+	bool compare_char(char* a, char* b, int length)
+		{
+			for(int i=0;i<length;i++)
+			{
+				if(a[i]!=b[i])
+					return false;
+			}
+			return true;
+		}
+	friend ostream& operator<<(ostream& os, const MyOperator& t);
 };
+
+ostream& operator<<(ostream& os, const MyOperator& t)
+{
+switch (t.operator_type)
+{
+case MAX:
+	os << "MAX" << t.n_numbers;
+	break;
+case MIN:
+	os << "MIN" << t.n_numbers;
+	break;
+case IF:
+	os << "IF";
+	break;
+case ADD:
+	os << "+";
+	break;
+case SUB:
+	os << "-";
+	break;
+case DIV:
+	os << "/";
+	break;
+case MUL:
+	os << "*";
+	break;
+}
+    return os;
+}	
 
 
 class Token{
@@ -45,6 +112,7 @@ public:
 		}
 		else
 		{
+			number = 0;
 			_operator = new MyOperator(txt);
 		}
 	}
@@ -57,9 +125,8 @@ ostream& operator<<(ostream& os, const Token& t)
 	if(t._operator == nullptr){
 		os << t.number;
 	}else{
-		os << t._operator->operator_type;
+		os << *(t._operator);
 	}
-	
     return os;
 }	
 
@@ -85,23 +152,14 @@ public:
 	LinkedList() : head(nullptr), tail(nullptr){
 	}
 
+
 	void append(const T &newData) {
 		++number_elements;
-		Node<T>* newNode = new Node<T>(newData);
-		if (!head) {
-			head = newNode; 
-			tail = newNode; 
-		} 
-		else {
-			tail->next = newNode;
-			newNode->previous = tail;
-			tail = newNode;
-		}
-		delete newNode;
+		Node<T>*  newNode = new Node(newData, head);
+		head = newNode;
 	}
 	void remove_last() {
 		--number_elements;
-
 		if (!head) // Empty list
 			return;
 		else if (head == tail) { // Only one element
@@ -110,9 +168,10 @@ public:
 			tail = nullptr;
 		}
 		else {
-			tail = tail->previous;
-			tail->next = nullptr;
-			delete tail;
+			Node<T>* temp = tail;
+            tail = tail->previous;
+            tail->next = nullptr;
+            delete temp;
 
 		}
 	}
@@ -127,9 +186,10 @@ public:
 			tail = nullptr;
 		}
 		else {
-			head = head->next;
-			head->previous = nullptr;
-			delete head;
+			Node<T>* temp = head;
+            head = head->next;
+            head->previous = nullptr;
+            delete temp;
 		}
 	}
 	void Print() {
@@ -137,7 +197,7 @@ public:
 		cout << "Numer of elements list : " << number_elements << endl;
 		while (temp != nullptr)
 		{
-			cout << temp->data << " ";
+			cout << temp->data << "\n";
 			temp = temp->next;
 		}
 		cout << endl;
@@ -161,7 +221,7 @@ public:
 
 	void push(const T &newData) {
 		Node<T>*  newNode = new Node(newData, topNode);
-		topNode = newNode->next;
+		topNode = newNode;
 		++n_elems;
 	}
 
@@ -170,7 +230,8 @@ public:
 		--n_elems;
 		if (!isEmpty()) {
 			Node<T>*  temp = topNode;
-			topNode = topNode->next;;
+			topNode = topNode->next;
+			delete temp;
 		}
 		else {
 			cout << "Error: Stack is empty. Cannot pop.\n";
@@ -211,23 +272,20 @@ int main() {
 	LinkedList<Token> list;
 	Stack<Token> stack;
 
-	int how_many = 4;
+	int how_many ;
+	cin>>how_many;
 	char input[9];
-	for (int i = 0; i < 6; i++)
+
+	for (int i = 0; i < how_many; i++)
 	{
 		cin >> input;
 		Token *t = new Token(input);
-
-		stack.push(*t);
-		if (i == 4)
-		{
-			stack.Print();
-			stack.pop();
-			stack.pop();
-		}	
+		list.append(*t);
 	}
-	stack.Print();
 
-
+	list.Print();
+	list.remove_first();
+	list.remove_first();
+	list.Print();
 	return 0;
 }
