@@ -1,183 +1,96 @@
 #include<iostream>
-#include<cstdlib>
-using namespace std;
+#include"DataStructures.hpp"
+#include<limits>
 
-class Node {
+#define MAX_INT_LENGTH 11
+
+enum operatorType {MAX, MIN, IF, N, ADD, SUB, DIV, MUL};
+
+class MyOperator{
 public:
-	int data;
-	Node* next;
-	bool isNumber;
-	// Constructor
-	Node(const int newData, Node* nextNode = nullptr, bool isNumber = false) : data(newData), next(nextNode), isNumber(isNumber) {
+	operatorType operator_type;
+	int n_numbers;
+	MyOperator(char txt[3]): n_numbers(0){
+		//TODO
+		if(txt == "MAX"){
+			operator_type = MAX;
+		}else if (txt == "MIN")
+		{
+			operator_type = MIN;
+		}else if (txt == "*")
+		{
+			operator_type = MUL;
+			n_numbers = 2;
+
+		}
+
 	}
 };
 
 
-
-class LinkedList {
-private:
-	Node* NewNode;
+class Token{
 public:
-	LinkedList() {
-		NewNode = nullptr;
-	}
-
-	void append(int value) {
-		Node* newNode = new Node(value);
-		if (NewNode == nullptr) 
-		{
-			NewNode = newNode;
-			return;
-		}
-
-		Node* temp = NewNode;
-		while (temp->next != nullptr) 
-		{
-			temp = temp->next;
-		}
-		temp->next = newNode;
-	}
-
-	void remove(int value) {
-		Node* temp = NewNode;
-		Node* prev = nullptr;
-
-		while (temp != nullptr && temp->data != value) {
-			prev = temp;
-			temp = temp->next;
-		}
-
-		if (temp == nullptr) {
-			cout << "Element not found in the list." << endl;
-			return;
-		}
-
-		if (prev == nullptr) {
-			NewNode = temp->next;
-		}
-		else {
-			prev->next = temp->next;
-		}
-		delete temp;
-	}
-
-	void Print() {
-		Node* temp = NewNode;
-		while (temp != nullptr) 
-		{
-			cout << temp->data << " ";
-			temp = temp->next;
-		}
-		cout << endl;
-	}
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-class Stack {
-private:
-	Node* topNode;
-
-public:
-	Stack() : topNode(nullptr) {
-	}
-	~Stack() {
-		while (!isEmpty()) {
-			pop();
-		}
-	}
-
-	void push(const int newData, bool isNumber) {
-		Node* newNode = new Node(newData, topNode,isNumber);
-		topNode = newNode;
-	}
-
-	// Pop element from the stack
-	void pop() {
-		if (!isEmpty()) {
-			Node* temp = topNode;
-			topNode = topNode->next;;
-		}
-		else {
-			cout << "Error: Stack is empty. Cannot pop.\n";
-		}
-	}
-
-	// Return the top element of the stack
-	int top() {
-		if (!isEmpty()) {
-			return topNode->data;
-		}
-		else {
-			cout << "Error: Stack is empty. Cannot access top element.\n";
-			throw out_of_range("Stack is empty.");
-		}
-	}
-
-
-	bool isEmpty() const {
-		return topNode == nullptr;
-	}
-
-	void Print() {
-		Node* temp = topNode;
-		while (temp != nullptr)
-		{
-			cout << temp->data << " ";
-			temp = temp->next;
-		}
-		cout << endl;
-	}
-};
-
-bool NumberOrOperator(char token)
-{
-	if (token <= '9' && token >= '0')
-		return true;
-	else
-		return false;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-int main() {
-	LinkedList list;
-	Stack stack;
-	int number_of_formulas;
-	int i = 0;
-	char token[12];
-	int token_in_int;
-	cin >> number_of_formulas;
-	while (i < number_of_formulas)
-	{
-		cin >> token;
-		if (NumberOrOperator(token[0]) == true)	{
-			token_in_int = atoi(token);
-			list.append(token_in_int);
-			
+	int number = 0;
+	MyOperator *_operator = nullptr;
+	Token(char txt[MAX_INT_LENGTH]){
+		if (isNumber(txt[0])){
+			number = atoi(txt);
 		}
 		else
 		{
-			switch (token[0]) {
-			case '.':
-				i++;
-			case '+':
-				stack.push(token[0], false);
-			case '-':
-				stack.push(token[0], false);
-			case '*':
-				stack.push(token[0], false);
-			case '/':
-				stack.push(token[0], false);
-			}	
+			_operator = new MyOperator(txt);
 		}
 	}
-	list.Print();
-	cout << endl;
+
+	bool isNumber(char token)
+	{
+		if (token <= '9' && token >= '0')
+			return true;
+		else
+			return false;
+	}
+
+	friend ostream& operator<<(ostream& os, const Token& t);
+};
+
+ostream& operator<<(ostream& os, const Token& t)
+{
+	if(t._operator == nullptr){
+		os << t.number;
+	}else{
+		os << t._operator->operator_type;
+	}
+	
+    return os;
+}	
+
+//dostępne operatory -> MIN, MAX, N, IF, *, /, +, -
+
+
+int main() {
+	LinkedList<Token> list;
+	Stack<Token> stack;
+
+	int number_of_formulas;
+	int i = 0;
+	char input_txt[MAX_INT_LENGTH];
+	int token_in_int = 0;
+
+	// transform
+	int n = 2;
+	Token *tmp;
+
+	cin >> number_of_formulas;
+	while (i++ < number_of_formulas)
+	{
+		cin >> input_txt;
+		Token *token = new Token(input_txt);
+
+		stack.push(*token);
+	}
 	stack.Print();
 
 	return 0;
 }
+
+
