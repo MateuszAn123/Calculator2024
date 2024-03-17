@@ -66,29 +66,19 @@ ostream& operator<<(ostream& os, const Token& t)
 
 //dostępne operatory -> MIN, MAX, N, IF, *, /, +, -
 
+bool testStack(){
+
+}
+
+bool testList()
+{}
 
 int main() {
 	LinkedList<Token> list;
 	Stack<Token> stack;
 
-	int number_of_formulas;
-	int i = 0;
-	char input_txt[MAX_INT_LENGTH];
-	int token_in_int = 0;
-
-	// transform
-	int n = 2;
-	Token *tmp;
-
-	cin >> number_of_formulas;
-	while (i++ < number_of_formulas)
-	{
-		cin >> input_txt;
-		Token *token = new Token(input_txt);
-
-		stack.push(*token);
-	}
-	stack.Print();
+	testStack();
+	testList();
 
 	return 0;
 }
