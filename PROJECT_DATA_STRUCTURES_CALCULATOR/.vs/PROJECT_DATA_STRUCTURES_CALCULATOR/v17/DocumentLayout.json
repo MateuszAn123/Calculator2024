@@ -1,0 +1,52 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\mewam\\OneDrive\\Pulpit\\King Donkey\\Calculator2024\\PROJECT_DATA_STRUCTURES_CALCULATOR\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{3FEA18F9-F41E-4B2F-81FF-E93F11F744DF}|PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR.vcxproj|C:\\Users\\mewam\\OneDrive\\Pulpit\\King Donkey\\Calculator2024\\PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{3FEA18F9-F41E-4B2F-81FF-E93F11F744DF}|PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR.vcxproj|solutionrelative:PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\mewam\\OneDrive\\Pulpit\\King Donkey\\template-project-2\\template-project-2\\Laby2\\Laby2\\Book.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Book.cpp",
+              "DocumentMoniker": "C:\\Users\\mewam\\OneDrive\\Pulpit\\King Donkey\\template-project-2\\template-project-2\\Laby2\\Laby2\\Book.cpp",
+              "RelativeDocumentMoniker": "..\\..\\template-project-2\\template-project-2\\Laby2\\Laby2\\Book.cpp",
+              "ToolTip": "C:\\Users\\mewam\\OneDrive\\Pulpit\\King Donkey\\template-project-2\\template-project-2\\Laby2\\Laby2\\Book.cpp",
+              "RelativeToolTip": "..\\..\\template-project-2\\template-project-2\\Laby2\\Laby2\\Book.cpp",
+              "ViewState": "AQIAACoAAAAAAAAAAAAAADQAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-03-14T14:13:23.952Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "PROJECT_DATA_STRUCTURES_CALCULATOR.cpp",
+              "DocumentMoniker": "C:\\Users\\mewam\\OneDrive\\Pulpit\\King Donkey\\Calculator2024\\PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR.cpp",
+              "RelativeDocumentMoniker": "PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR.cpp",
+              "ToolTip": "C:\\Users\\mewam\\OneDrive\\Pulpit\\King Donkey\\Calculator2024\\PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR.cpp",
+              "RelativeToolTip": "PROJECT_DATA_STRUCTURES_CALCULATOR\\PROJECT_DATA_STRUCTURES_CALCULATOR.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABoAAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-03-10T14:48:59.311Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
