@@ -9,13 +9,14 @@ using namespace std;
 
 
 
-enum operatorType {ADD, SUB, DIV, MUL, N, IF, MAX, MIN};
+enum operatorType {ADD, SUB, DIV, MUL, N, IF, MAX, MIN,OPEN,CLOSE};
 
 class MyOperator{
 public:
 	operatorType operator_type;
 	int n_numbers;
-	MyOperator(char txt[3]): n_numbers(0){
+	int index;
+	MyOperator(char txt[3]): n_numbers(0),index(0){
 		if(compare_char(txt, "MAX",3) == 1){
 			operator_type = MAX;
 		}else if (compare_char(txt, "MIN",3) == 1)
@@ -47,7 +48,16 @@ public:
 		{
 			operator_type = N;
 			n_numbers = 1;
-		}else{
+		}
+		else if (compare_char(txt, "(", 1) == 1)
+		{
+			operator_type = OPEN;
+		}
+		else if (compare_char(txt, ")", 1) == 1)
+		{
+			operator_type = CLOSE;
+		}
+		else{
 			cout << "nie wykryto zadnego operatora\n";
 		}
 		//cout << operator_type << endl;
@@ -88,6 +98,12 @@ case DIV:
 	break;
 case MUL:
 	os << "*";
+	break;
+case OPEN:
+	os << "(";
+	break;
+case CLOSE:
+	os << ")";
 	break;
 }
     return os;
@@ -143,6 +159,10 @@ public:
 	}
 };
 
+
+
+
+
 template <typename T> class LinkedList {
 private:
 	Node<T> *head;
@@ -151,12 +171,18 @@ private:
 public:
 	LinkedList() : head(nullptr), tail(nullptr){
 	}
-
-
 	void append(const T &newData) {
+
 		++number_elements;
-		Node<T>*  newNode = new Node(newData, head);
-		head = newNode;
+    	Node<T>* newNode = new Node<T>(newData, nullptr);
+   		if (head == nullptr) {
+        	head = newNode;
+     		tail = newNode;
+    	} else {
+     	  	tail->next = newNode;
+    	    newNode->previous = tail;
+    	    tail = newNode;
+    	}
 	}
 	void remove_last() {
 		--number_elements;
@@ -192,71 +218,19 @@ public:
             delete temp;
 		}
 	}
-	void Print() {
-		Node<T>* temp = head;
+	void Print_last_to_first() {
+		Node<T>* temp = tail;
 		cout << "Numer of elements list : " << number_elements << endl;
 		while (temp != nullptr)
 		{
-			cout << temp->data << "\n";
-			temp = temp->next;
+			cout << temp->data << " ";
+			temp = temp->previous;
 		}
 		cout << endl;
 	}
-};
-
-
-template <typename T> class Stack {
-private:
-	Node<T> *topNode;
-	int n_elems = 0;
-
-public:
-	Stack() : topNode(nullptr) {
-	}
-	~Stack() {
-		while (!isEmpty()) {
-			pop();
-		}
-	}
-
-	void push(const T &newData) {
-		Node<T>*  newNode = new Node(newData, topNode);
-		topNode = newNode;
-		++n_elems;
-	}
-
-	// Pop element from the stack
-	void pop() {
-		--n_elems;
-		if (!isEmpty()) {
-			Node<T>*  temp = topNode;
-			topNode = topNode->next;
-			delete temp;
-		}
-		else {
-			cout << "Error: Stack is empty. Cannot pop.\n";
-		}
-	}
-
-	// Return the top element of the stack
-	T* top() {
-		if (!isEmpty()) {
-			return &(topNode->data);
-		}
-		else {
-			cout << "Error: Stack is empty. Cannot access top element.\n";
-			throw out_of_range("Stack is empty.");
-		}
-	}
-
-
-	bool isEmpty() const {
-		return topNode == nullptr;
-	}
-
-	void Print() {
-		Node<T>* temp = topNode;
-		cout << "Number of elements: " << n_elems << endl;
+	void Print_first_to_last() {
+		Node<T>* temp = head;
+		cout << "Numer of elements list : " << number_elements << endl;
 		while (temp != nullptr)
 		{
 			cout << temp->data << " ";
@@ -264,13 +238,30 @@ public:
 		}
 		cout << endl;
 	}
+
+	T& get_first() {
+        if (head == nullptr) {
+            throw out_of_range("List is empty");
+        }
+        return head->data;
+    }
+
+	T& get_last() {
+        if (tail == nullptr) {
+            throw out_of_range("List is empty");
+        }
+        return tail->data;
+    }
+
 };
 
 
 
+
 int main() {
+
 	LinkedList<Token> list;
-	Stack<Token> stack;
+
 
 	int how_many ;
 	cin>>how_many;
@@ -283,9 +274,13 @@ int main() {
 		list.append(*t);
 	}
 
-	list.Print();
-	list.remove_first();
-	list.remove_first();
-	list.Print();
+	list.Print_last_to_first();
+	list.Print_first_to_last();
+	cout<<endl;
+	cout<<"Pierwszy element "<<list.get_last()<<endl;
+	list.remove_last();
+	cout<<"Pierwszy element "<<list.get_last()<<endl;
+	list.Print_last_to_first();
+	list.Print_first_to_last();
 	return 0;
 }
