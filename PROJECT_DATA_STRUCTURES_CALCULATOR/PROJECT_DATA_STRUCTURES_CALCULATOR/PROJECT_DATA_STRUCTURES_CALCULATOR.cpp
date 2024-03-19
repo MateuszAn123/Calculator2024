@@ -1,8 +1,6 @@
 ﻿#include<iostream>
 #include<cstdlib>
-#include<cstring>
-#include<fstream>
-#define MAX_INT_LENGTH 10
+#define MAX_INT_LENGTH 11
 
 using namespace std;
 
@@ -10,6 +8,16 @@ using namespace std;
 
 
 enum operatorType {ADD, SUB, DIV, MUL, N, IF, MAX, MIN,OPEN,CLOSE};
+
+bool compare_char( char a[],const char b[], int length)
+		{
+			for(int i=0;i<length;i++)
+			{
+				if(a[i]!=b[i])
+					return false;
+			}
+			return true;
+		}
 
 class MyOperator{
 public:
@@ -72,15 +80,7 @@ public:
 
 		//cout << operator_type << endl;
 	}
-	bool compare_char(char* a, char* b, int length)
-		{
-			for(int i=0;i<length;i++)
-			{
-				if(a[i]!=b[i])
-					return false;
-			}
-			return true;
-		}
+	
 	friend ostream& operator<<(ostream& os, const MyOperator& t);
 };
 
@@ -141,18 +141,18 @@ public:
 		}
 		else
 		{
-			number = 0;
 			_operator = new MyOperator(txt);
 		}
 	}
 
 	bool operator==(const Token& other) const {
-        return (number == other.number && _operator == other._operator);
-    	}
+        return (number == other.number) && (_operator == other._operator);
+    }
 
+    // Inequality operator !=
     bool operator!=(const Token& other) const {
-        return !(*this == other);
-    	}
+        return !(*this == other); 
+    }
 
 	friend ostream& operator<<(ostream& os, const Token& t);
 };
@@ -264,12 +264,15 @@ public:
         return head->data;
     }
 
-	T& get_last() {
-        if (tail == nullptr) {
-            throw out_of_range("List is empty");
-        }
-        return tail->data;
+T& get_last() {
+    if (tail == nullptr && head != nullptr) {
+        return head->data;
     }
+    else if (tail == nullptr && head == nullptr) {
+        throw out_of_range("List is empty");
+    }
+    return tail->data;
+	}
 
 	bool isEmpty() const {
         return (head == nullptr);
@@ -284,15 +287,14 @@ int main() {
 
 	LinkedList<Token> list;
 	LinkedList<Token> stack;
-	Token open = "(";
-	bool ifPara = false;
 	int how_many ;
 	cin>>how_many;
-	char input[9];
+	char input[MAX_INT_LENGTH];
+	
 	int i=0;
 	while(i < how_many)
 	{
-		cin >> input;
+	cin >> input;
 	if(input[0]=='.')
 		{
 			while(!stack.isEmpty())
@@ -312,20 +314,16 @@ int main() {
 		Token *t = new Token(input);
 		switch (input[0]) {
     	case '(':
-     	   ifPara = true;
     	    stack.append(*t);
     	    break;
-
   	  	case ')':
-   	    	ifPara = false;
-        	while (stack.get_last() != open) 
+        	while (stack.get_last()._operator->operator_type != OPEN)
 			{
             	list.append(stack.get_last());
             	stack.remove_last();
     	    }
     	    stack.remove_last();
         	break;
-
     	default:
         	if (stack.isEmpty() || (stack.get_last()._operator->n_numbers <= list.number_elements && t->_operator->index > stack.get_last()._operator->index)) 
 			{
@@ -333,7 +331,7 @@ int main() {
 			} 
 			else if (stack.get_last()._operator->n_numbers <= list.number_elements && t->_operator->index <= stack.get_last()._operator->index) 
 			{
-   				while (!stack.isEmpty() && t->_operator->index <= stack.get_last()._operator->index)
+   				while (!stack.isEmpty() && t->_operator->index <= stack.get_last()._operator->index && stack.get_last()._operator->index != 4)
 				{
         			list.append(stack.get_last());
         			stack.remove_last();                    
@@ -342,7 +340,6 @@ int main() {
 			}
         	break;
 		}
-			
 		}
 	}
 	list.Print_first_to_last();
