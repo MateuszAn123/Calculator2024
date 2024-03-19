@@ -24,7 +24,7 @@ public:
 	operatorType operator_type;
 	int n_numbers;
 	int index;
-	MyOperator(char txt[3]) : n_numbers(0), index(1) {
+	MyOperator(char txt[3]) : n_numbers(0), index(1)  {
 		if (compare_char(txt, "MAX", 3) == 1)
 		{
 			operator_type = MAX;
@@ -82,8 +82,6 @@ public:
 			operator_type = CLOSE;
 			index = 4;
 		}
-
-		//cout << operator_type << endl;
 	}
 
 	friend ostream& operator<<(ostream& os, const MyOperator& t);
@@ -202,7 +200,7 @@ public:
 	Node* previous;
 	T data;
 	// Constructor
-	Node(const T newData, Node* nextNode = nullptr, Node* prevNode = nullptr) : data(newData), next(nextNode), previous(prevNode) {
+	Node(const T newData, Node* nextNode, Node* prevNode) : data(newData), next(nextNode), previous(prevNode) {
 	}
 };
 
@@ -219,7 +217,7 @@ public:
 	void append_last(const T& newData) {
 
 		++number_elements;
-		Node<T>* newNode = new Node<T>(newData, nullptr);
+		Node<T>* newNode = new Node<T>(newData, nullptr,nullptr);
 		if (head == nullptr) {
 			head = newNode;
 			tail = newNode;
@@ -233,7 +231,7 @@ public:
 
 	void append_first(const T& newData) {
 		++number_elements;
-		Node<T>* newNode = new Node<T>(newData, nullptr);
+		Node<T>* newNode = new Node<T>(newData, nullptr,nullptr);
 
 		if (head == nullptr) {
 			head = newNode;
@@ -278,7 +276,7 @@ public:
 			delete temp;
 		}
 	}
-	void Print_last_to_first() {
+	void Print_last_to_first() const {
 		Node<T>* temp = tail;
 		while (temp != nullptr)
 		{
@@ -287,7 +285,7 @@ public:
 		}
 		cout << endl;
 	}
-	void Print_first_to_last() {
+	void Print_first_to_last() const {
 		Node<T>* temp = head;
 		while (temp != nullptr)
 		{
@@ -296,11 +294,6 @@ public:
 		}
 		cout << endl;
 	}
-
-	bool has_only_one_element() const {
-		return (head != nullptr && head == tail);
-	}
-
 
 	T& get_first() {
 		if (head == nullptr && tail != nullptr)
@@ -333,12 +326,10 @@ public:
 int main() {
 	int number1 = 0;
 	int number2 = 0;
-	int number3 = 0;
 	int how_many;
 	cin >> how_many;
 	char input[MAX_INT_LENGTH];
 	int result = 0;
-	int i = 0;
 	for (int i = 0; i < how_many; i++)
 	{
 		LinkedList<Token> list;
@@ -446,9 +437,10 @@ int main() {
 					break;
 				}
 			}
-			if (list.has_only_one_element() && list.get_first().number)
+			if (list.number_elements==1 && list.get_first().number)
 			{
-				cout << list.get_first();
+				cout << list.get_first() << endl << endl;
+
 				break;
 			}
 		}
