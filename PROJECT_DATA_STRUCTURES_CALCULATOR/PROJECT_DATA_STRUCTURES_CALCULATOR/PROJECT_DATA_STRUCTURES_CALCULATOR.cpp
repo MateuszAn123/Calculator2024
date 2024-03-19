@@ -24,7 +24,7 @@ public:
 	operatorType operator_type;
 	int n_numbers;
 	int index;
-	MyOperator(char txt[3]): n_numbers(0),index(1){
+	MyOperator(char txt[3]): n_numbers(1),index(1){
 		if(compare_char(txt, "MAX",3) == 1)
 		{
 			operator_type = MAX;
@@ -108,6 +108,9 @@ case DIV:
 	break;
 case MUL:
 	os << "*";
+	break;
+case N:
+	os << "N";
 	break;
 case OPEN:
 	os << "(";
@@ -290,7 +293,7 @@ int main() {
 	int how_many ;
 	cin>>how_many;
 	char input[MAX_INT_LENGTH];
-	
+	int przecinek = 1;
 	int i=0;
 	while(i < how_many)
 	{
@@ -304,7 +307,7 @@ int main() {
 			}
 			i++;
 			break;
-		}	
+		}
 	else if(isNumber(input[0]))
 		{
 			Token *t = new Token(input);
