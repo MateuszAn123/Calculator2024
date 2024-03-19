@@ -1,7 +1,7 @@
 ﻿#include<iostream>
 #include<cstdlib>
 #include<cstring>
-
+#include<fstream>
 #define MAX_INT_LENGTH 10
 
 using namespace std;
@@ -20,54 +20,54 @@ public:
 		if(compare_char(txt, "MAX",3) == 1)
 		{
 			operator_type = MAX;
-			index = 2;
+			index = 3;
 
 		}else if (compare_char(txt, "MIN",3) == 1)
 		{
 			operator_type = MIN;
-			index = 2;
+			index = 3;
 		}else if (compare_char(txt, "*",1) == 1)
 		{
 			operator_type = MUL;
 			n_numbers = 2;
-			index = 3;
+			index = 2;
 		}else if (compare_char(txt, "+",1) == 1)
 		{
 			operator_type = ADD;
 			n_numbers = 2;
-			index = 4;
+			index = 1;
 		}else if (compare_char(txt, "-",1) == 1)
 		{
 			operator_type = SUB;
 			n_numbers = 2;
-			index = 4;
+			index = 1;
 		}else if (compare_char(txt, "/",1) == 1)
 		{
 			operator_type = DIV;
 			n_numbers = 2;
-			index = 3;
+			index = 2;
 		}
 		else if (compare_char(txt, "IF",2) == 1)
 		{
 			operator_type = IF;
 			n_numbers = 3;
-			index = 2;
+			index = 3;
 		}
 		else if (compare_char(txt, "N", 1) == 1)
 		{
 			operator_type = N;
 			n_numbers = 1;
-			index = 2;
+			index = 3;
 		}
 		else if (compare_char(txt, "(", 1) == 1)
 		{
 			operator_type = OPEN;
-			index = 1;
+			index = 4;
 		}
 		else if (compare_char(txt, ")", 1) == 1)
 		{
 			operator_type = CLOSE;
-			index=1;
+			index=4;
 		}
 
 		//cout << operator_type << endl;
@@ -146,6 +146,14 @@ public:
 		}
 	}
 
+	bool operator==(const Token& other) const {
+        return (number == other.number && _operator == other._operator);
+    	}
+
+    bool operator!=(const Token& other) const {
+        return !(*this == other);
+    	}
+
 	friend ostream& operator<<(ostream& os, const Token& t);
 };
 
@@ -171,8 +179,6 @@ public:
 	Node(const T newData, Node* nextNode = nullptr, Node* prevNode = nullptr) : data(newData), next(nextNode),previous(prevNode) {
 	}
 };
-
-
 
 
 
@@ -250,6 +256,7 @@ public:
 		cout << endl;
 	}
 
+
 	T& get_first() {
         if (head == nullptr) {
             throw out_of_range("List is empty");
@@ -267,32 +274,18 @@ public:
 	bool isEmpty() const {
         return (head == nullptr);
     }
+
 };
 
-void operation_on_stack_and_list(LinkedList list, LinkedList stack, Token *t)
-{
-if(stack.isEmpty())
-	{
-	stack.append(*t);
-	}
-	else if ((stack.get_last()._operator->n_numbers<= list.number_elements) && ( t->_operator->index >= stack.get_last()._operator->index))
-	{
-		list.append(stack.get_last());
-		stack.remove_last();
-		stack.append(*t);
-	}
-	else {			
-		stack.append(*t);
-	}	
-}
+
 
 
 int main() {
 
 	LinkedList<Token> list;
 	LinkedList<Token> stack;
+	Token open = "(";
 	bool ifPara = false;
-
 	int how_many ;
 	cin>>how_many;
 	char input[9];
@@ -300,7 +293,7 @@ int main() {
 	while(i < how_many)
 	{
 		cin >> input;
-		if(input[0]=='.')
+	if(input[0]=='.')
 		{
 			while(!stack.isEmpty())
 			{
@@ -310,35 +303,45 @@ int main() {
 			i++;
 			break;
 		}	
-		else if(isNumber(input[0]))
+	else if(isNumber(input[0]))
 		{
 			Token *t = new Token(input);
 			list.append(*t);
 		}
-		else{
-			Token *t = new Token(input);
-			if(input = "(")
-			{
+	else{
+		Token *t = new Token(input);
+		switch (input[0]) {
+    	case '(':
+     	   ifPara = true;
+    	    stack.append(*t);
+    	    break;
 
-				ifPara = true;
-				stack.append(*t);
-			}
-			else 
+  	  	case ')':
+   	    	ifPara = false;
+        	while (stack.get_last() != open) 
 			{
-			if(stack.isEmpty())
+            	list.append(stack.get_last());
+            	stack.remove_last();
+    	    }
+    	    stack.remove_last();
+        	break;
+
+    	default:
+        	if (stack.isEmpty() || (stack.get_last()._operator->n_numbers <= list.number_elements && t->_operator->index > stack.get_last()._operator->index)) 
+			{
+    			stack.append(*t);
+			} 
+			else if (stack.get_last()._operator->n_numbers <= list.number_elements && t->_operator->index <= stack.get_last()._operator->index) 
+			{
+   				while (!stack.isEmpty() && t->_operator->index <= stack.get_last()._operator->index)
 				{
-				stack.append(*t);
-				}
-			else if ((stack.get_last()._operator->n_numbers<= list.number_elements) && ( t->_operator->index >= stack.get_last()._operator->index))
-				{
-				list.append(stack.get_last());
-				stack.remove_last();
-				stack.append(*t);
-				}
-			else {			
-				stack.append(*t);
-			}	
+        			list.append(stack.get_last());
+        			stack.remove_last();                    
+   				}
+    			stack.append(*t);
 			}
+        	break;
+		}
 			
 		}
 	}
