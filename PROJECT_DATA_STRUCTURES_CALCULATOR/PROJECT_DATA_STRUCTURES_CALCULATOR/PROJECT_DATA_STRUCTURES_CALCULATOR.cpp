@@ -142,7 +142,7 @@ public:
 	int number = 0;
 	MyOperator* _operator = nullptr;
 
-	Token(){
+	Token() {
 	}
 
 	Token(int num) : number(num), _operator(nullptr) {
@@ -166,16 +166,16 @@ public:
 		return !(*this == other);
 	}
 
-	Token operator+(int num) const { 
-		Token result; 
+	Token operator+(int num) const {
+		Token result;
 		result.number = number + num;
 		return result;
 	}
 
 	// Overloading operator- for subtracting an integer from a Token
-	Token operator-(int num) const { 
+	Token operator-(int num) const {
 		Token result;
-		result.number = number - num; 
+		result.number = number - num;
 		return result;
 	}
 
@@ -216,7 +216,7 @@ public:
 	int number_elements = 0;
 	LinkedList() : head(nullptr), tail(nullptr) {
 	}
-	void append(const T& newData) {
+	void append_last(const T& newData) {
 
 		++number_elements;
 		Node<T>* newNode = new Node<T>(newData, nullptr);
@@ -228,6 +228,21 @@ public:
 			tail->next = newNode;
 			newNode->previous = tail;
 			tail = newNode;
+		}
+	}
+
+	void append_first(const T& newData) {
+		++number_elements;
+		Node<T>* newNode = new Node<T>(newData, nullptr);
+
+		if (head == nullptr) {
+			head = newNode;
+			tail = newNode;
+		}
+		else {
+			newNode->next = head;
+			head->previous = newNode;
+			head = newNode;
 		}
 	}
 	void remove_last() {
@@ -282,11 +297,16 @@ public:
 		cout << endl;
 	}
 
+	bool has_only_one_element() const {
+		return (head != nullptr && head == tail);
+	}
+
 
 	T& get_first() {
-		if (head == nullptr) {
+		if (head == nullptr && tail != nullptr)
+			return tail->data;
+		else if (head == nullptr && tail == nullptr)
 			throw out_of_range("List is empty");
-		}
 		return head->data;
 	}
 
@@ -300,25 +320,6 @@ public:
 		return tail->data;
 	}
 
-	T& pop_first() {
-		if (head == nullptr) {
-			throw out_of_range("List is empty");
-		}
-		remove_first();
-		return head->data;
-	}
-
-	T& pop_last() {
-		if (tail == nullptr && head != nullptr) {
-			remove_last();
-			return head->data;
-		}
-		else if (tail == nullptr && head == nullptr) {
-			throw out_of_range("List is empty");
-		}
-		remove_last();
-		return tail->data;
-	}
 
 	bool isEmpty() const {
 		return (head == nullptr);
@@ -330,11 +331,13 @@ public:
 
 
 int main() {
-
+	int number1 = 0;
+	int number2 = 0;
+	int number3 = 0;
 	int how_many;
 	cin >> how_many;
 	char input[MAX_INT_LENGTH];
-
+	int result = 0;
 	int i = 0;
 	for (int i = 0; i < how_many; i++)
 	{
@@ -348,7 +351,7 @@ int main() {
 			{
 				while (!stack.isEmpty())
 				{
-					list.append(stack.get_last());
+					list.append_last(stack.get_last());
 					stack.remove_last();
 				}
 				break;
@@ -356,19 +359,19 @@ int main() {
 			else if (isNumber(input[0]))
 			{
 				Token* t = new Token(input);
-				list.append(*t);
+				list.append_last(*t);
 			}
-			else 
+			else
 			{
 				Token* t = new Token(input);
 				switch (input[0]) {
 				case '(':
-					stack.append(*t);
+					stack.append_last(*t);
 					break;
 				case ')':
 					while (stack.get_last()._operator->operator_type != OPEN)
 					{
-						list.append(stack.get_last());
+						list.append_last(stack.get_last());
 						stack.remove_last();
 					}
 					stack.remove_last();
@@ -376,49 +379,79 @@ int main() {
 				default:
 					if (stack.isEmpty() || (t->_operator->index > stack.get_last()._operator->index))
 					{
-						stack.append(*t);
+						stack.append_last(*t);
 					}
 					else if (t->_operator->index <= stack.get_last()._operator->index)
 					{
 						while (!stack.isEmpty() && t->_operator->index <= stack.get_last()._operator->index && stack.get_last()._operator->index != 4)
 						{
-							list.append(stack.get_last());
+							list.append_last(stack.get_last());
 							stack.remove_last();
 						}
-						stack.append(*t);
+						stack.append_last(*t);
 					}
 					break;
 				}
 			}
-
 		}
 		list.Print_first_to_last();
 		while (true)
 		{
 			if (list.get_first().number)
 			{
-				stack.append(list.get_first());
+				stack.append_last(list.get_first());
 				list.remove_first();
 			}
 			else
 			{
-				stack.append(list.get_first());
+				stack.append_last(list.get_first());
 				list.remove_first();
-				stack.Print_first_to_last();
-				switch(list.get_first()._operator->operator_type){
+				stack.Print_last_to_first();
+				switch (stack.get_last()._operator->operator_type) {
 				case ADD:
-					int a = stack.get_first().number;
-					stack.remove_first();
-					int b = stack.get_first().number;
-					stack.remove_first();
-					int result = a + b;
-					Token sum(result);
-
+					stack.remove_last();
+					number1 = stack.get_last().number; 
+					stack.remove_last();
+					number2 = stack.get_last().number;
+					stack.remove_last();
+					result = number1 + number2;
+					list.append_first(result);
+					break;
+				case MUL:
+					stack.remove_last();
+					number1 = stack.get_last().number;
+					stack.remove_last();
+					number2 = stack.get_last().number;
+					stack.remove_last();
+					result = number1 * number2;
+					list.append_first(result);
+					break;
+				case SUB:
+					stack.remove_last();
+					number1 = stack.get_last().number;
+					stack.remove_last();
+					number2 = stack.get_last().number;
+					stack.remove_last();
+					result = number2 - number1;
+					list.append_first(result);
+					break;
+				case DIV:
+					stack.remove_last();
+					number1 = stack.get_last().number;
+					stack.remove_last();
+					number2 = stack.get_last().number;
+					stack.remove_last();
+					result = number2 / number1;
+					list.append_first(result);
+					break;
 				}
+			}
+			if (list.has_only_one_element() && list.get_first().number)
+			{
+				cout << list.get_first();
+				break;
 			}
 		}
 	}
-
-
 	return 0;
 }
