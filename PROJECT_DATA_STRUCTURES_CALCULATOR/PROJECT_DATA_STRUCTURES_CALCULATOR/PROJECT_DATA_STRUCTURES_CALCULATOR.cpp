@@ -140,11 +140,7 @@ public:
 	int number = 0;
 	MyOperator* _operator = nullptr;
 
-	Token() {
-	}
-
-	Token(int num) : number(num), _operator(nullptr) {
-	}
+	Token(int num) : number(num), _operator(nullptr) {}
 
 	Token(char txt[MAX_INT_LENGTH]) {
 		if (isNumber(txt[0])) {
@@ -155,7 +151,9 @@ public:
 			_operator = new MyOperator(txt);
 		}
 	}
-
+	/*
+	
+	*/
 	bool operator==(const Token& other) const {
 		return (number == other.number) && (_operator == other._operator);
 	}
@@ -165,16 +163,26 @@ public:
 	}
 
 	Token operator+(int num) const {
-		Token result;
-		result.number = number + num;
+		Token result(number+num);
 		return result;
 	}
 
-	// Overloading operator- for subtracting an integer from a Token
 	Token operator-(int num) const {
-		Token result;
-		result.number = number - num;
+		Token result(number-num);
 		return result;
+	}
+
+	Token& operator=(const Token& other) {
+		if (this != &other) { 
+			number = other.number;
+			if (_operator)
+				delete _operator;
+			if (other._operator)
+				_operator = new MyOperator(*other._operator);
+			else
+				_operator = nullptr;
+		}
+		return *this;
 	}
 
 	friend ostream& operator<<(ostream& os, const Token& t);
@@ -393,12 +401,12 @@ int main() {
 				stack.append_last(list.get_first());
 				list.remove_first();
 			}
-			else
+			else 
 			{
 				stack.append_last(list.get_first());
 				list.remove_first();
 				stack.Print_last_to_first();
-				switch (stack.get_last()._operator->operator_type) {
+				switch ( stack.get_last()._operator->operator_type ) {
 				case ADD:
 					stack.remove_last();
 					number1 = stack.get_last().number; 
@@ -437,12 +445,15 @@ int main() {
 					break;
 				}
 			}
-			if (list.number_elements==1 && list.get_first().number)
+			if (list.number_elements == 1 && list.get_first().number)
 			{
-				cout << list.get_first() << endl << endl;
 
+				cout << list.get_first() << endl << endl;
+				list.remove_first();
 				break;
 			}
+
+			
 		}
 	}
 	return 0;
