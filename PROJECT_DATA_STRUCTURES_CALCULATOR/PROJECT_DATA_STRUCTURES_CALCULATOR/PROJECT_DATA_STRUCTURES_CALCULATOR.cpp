@@ -7,7 +7,7 @@ using namespace std;
 
 
 
-enum operatorType { ADD, SUB, DIV, MUL, N, IF, MAX, MIN, OPEN, CLOSE };
+enum operatorType { ADD, SUB, DIV, MUL, N, IF, MAX, MIN, OPEN, CLOSE , PRZECINEK};
 
 bool compare_char(char a[], const char b[], int length)
 {
@@ -24,7 +24,7 @@ public:
 	operatorType operator_type;
 	int n_numbers;
 	int index;
-	MyOperator(char txt[3]) : n_numbers(0), index(1)  {
+	MyOperator(char txt[3]) : n_numbers(0), index(1) {
 		if (compare_char(txt, "MAX", 3) == 1)
 		{
 			operator_type = MAX;
@@ -82,6 +82,13 @@ public:
 			operator_type = CLOSE;
 			index = 4;
 		}
+		else if (compare_char(txt, ",", 1) == 1)
+		{
+			operator_type = PRZECINEK;
+			index = 0;
+			n_numbers = 1;
+
+		}
 	}
 
 	friend ostream& operator<<(ostream& os, const MyOperator& t);
@@ -121,6 +128,9 @@ ostream& operator<<(ostream& os, const MyOperator& t)
 	case CLOSE:
 		os << ")";
 		break;
+	case PRZECINEK:
+		os << ",";
+		break;
 	}
 	return os;
 }
@@ -151,9 +161,7 @@ public:
 			_operator = new MyOperator(txt);
 		}
 	}
-	/*
 	
-	*/
 	bool operator==(const Token& other) const {
 		return (number == other.number) && (_operator == other._operator);
 	}
@@ -163,17 +171,17 @@ public:
 	}
 
 	Token operator+(int num) const {
-		Token result(number+num);
+		Token result(number + num);
 		return result;
 	}
 
 	Token operator-(int num) const {
-		Token result(number-num);
+		Token result(number - num);
 		return result;
 	}
 
 	Token& operator=(const Token& other) {
-		if (this != &other) { 
+		if (this != &other) {
 			number = other.number;
 			if (_operator)
 				delete _operator;
@@ -182,6 +190,7 @@ public:
 			else
 				_operator = nullptr;
 		}
+
 		return *this;
 	}
 
@@ -225,7 +234,7 @@ public:
 	void append_last(const T& newData) {
 
 		++number_elements;
-		Node<T>* newNode = new Node<T>(newData, nullptr,nullptr);
+		Node<T>* newNode = new Node<T>(newData, nullptr, nullptr);
 		if (head == nullptr) {
 			head = newNode;
 			tail = newNode;
@@ -239,7 +248,7 @@ public:
 
 	void append_first(const T& newData) {
 		++number_elements;
-		Node<T>* newNode = new Node<T>(newData, nullptr,nullptr);
+		Node<T>* newNode = new Node<T>(newData, nullptr, nullptr);
 
 		if (head == nullptr) {
 			head = newNode;
@@ -300,6 +309,7 @@ public:
 			cout << temp->data << " ";
 			temp = temp->next;
 		}
+		
 		cout << endl;
 	}
 
@@ -328,13 +338,24 @@ public:
 
 };
 
+int function_IF(int n1, int n2, int n3)
+{
+	if (n1 >= 0)
+		return n2;
+	else
+		return n3;
+}
+
 
 
 
 int main() {
 	int number1 = 0;
 	int number2 = 0;
+	int number3 = 0;
+	int commas = 0;
 	int how_many;
+	int max_or_min = 0;
 	cin >> how_many;
 	char input[MAX_INT_LENGTH];
 	int result = 0;
@@ -368,20 +389,46 @@ int main() {
 					stack.append_last(*t);
 					break;
 				case ')':
+					
 					while (stack.get_last()._operator->operator_type != OPEN)
+					{
+						if (stack.get_last()._operator->operator_type == PRZECINEK)
+						{
+							stack.remove_last();
+						}
+						else
+						{
+							list.append_last(stack.get_last());
+							stack.remove_last();
+						}
+					}
+					stack.remove_last();
+					break;
+				case ',':
+					while (stack.get_last()._operator->operator_type != OPEN && stack.get_last()._operator->operator_type != PRZECINEK)
 					{
 						list.append_last(stack.get_last());
 						stack.remove_last();
 					}
-					stack.remove_last();
+					commas++;
+					stack.append_last(*t);
 					break;
 				default:
-					if (stack.isEmpty() || (t->_operator->index > stack.get_last()._operator->index))
+					if ((stack.isEmpty()) || (t->_operator->index > stack.get_last()._operator->index))
 					{
+						if (stack.get_last()._operator->operator_type == MAX || stack.get_last()._operator->operator_type == MIN)
+						{
+							stack.get_last()._operator->n_numbers = commas+1;
+						}
 						stack.append_last(*t);
 					}
 					else if (t->_operator->index <= stack.get_last()._operator->index)
 					{
+						if (stack.get_last()._operator->operator_type == MAX || stack.get_last()._operator->operator_type == MIN)
+						{
+							stack.get_last()._operator->n_numbers = commas + 1;
+							commas = 0;
+						}
 						while (!stack.isEmpty() && t->_operator->index <= stack.get_last()._operator->index && stack.get_last()._operator->index != 4)
 						{
 							list.append_last(stack.get_last());
@@ -393,6 +440,7 @@ int main() {
 				}
 			}
 		}
+		cout << commas << endl;
 		list.Print_first_to_last();
 		while (true)
 		{
@@ -401,15 +449,19 @@ int main() {
 				stack.append_last(list.get_first());
 				list.remove_first();
 			}
-			else 
+			else if (list.get_first() == PRZECINEK)
+			{
+				list.remove_first();
+			}
+			else
 			{
 				stack.append_last(list.get_first());
 				list.remove_first();
 				stack.Print_last_to_first();
-				switch ( stack.get_last()._operator->operator_type ) {
+				switch (stack.get_last()._operator->operator_type) {
 				case ADD:
 					stack.remove_last();
-					number1 = stack.get_last().number; 
+					number1 = stack.get_last().number;
 					stack.remove_last();
 					number2 = stack.get_last().number;
 					stack.remove_last();
@@ -443,17 +495,50 @@ int main() {
 					result = number2 / number1;
 					list.append_first(result);
 					break;
+				case N:
+					stack.remove_last();
+					number1 = stack.get_last().number;
+					stack.remove_last();
+					result = number1 * -1;
+					list.append_first(result);
+					break;
+				case IF:
+					stack.remove_last();
+					number1 = stack.get_last().number;
+					stack.remove_last();
+					number2 = stack.get_last().number;
+					stack.remove_last();
+					number3 = stack.get_last().number;
+					stack.remove_last();
+					result = function_IF(number3, number2, number1);
+					list.append_first(result);
+					break;
+				case MAX:
+					////////////////
+					result = 0;
+					list.append_first(result);
+					break;
+				case MIN:
+					stack.remove_last();
+					number1 = stack.get_last().number;
+					stack.remove_last();
+					number2 = stack.get_last().number;
+					stack.remove_last();
+					number3 = stack.get_last().number;
+					stack.remove_last();
+					result = function_IF(number3, number2, number1);
+					list.append_first(result);
+					break;
 				}
 			}
 			if (list.number_elements == 1 && list.get_first().number)
 			{
-
 				cout << list.get_first() << endl << endl;
 				list.remove_first();
 				break;
 			}
 
-			
+
 		}
 	}
 	return 0;
