@@ -373,7 +373,6 @@ int main() {
 				{
 					if (stack.get_last()._operator->operator_type == MAX || stack.get_last()._operator->operator_type == MIN)
 					{
-						//stack.get_last()._operator->n_numbers = commas;
 						commas = 1;
 					}
 					list.append_last(stack.get_last());
@@ -382,6 +381,11 @@ int main() {
 				break;
 			}
 			else if (isNumber(input[0]))
+			{
+				Token* t = new Token(input);
+				list.append_last(*t);
+			}
+			else if (input[0]=='0')
 			{
 				Token* t = new Token(input);
 				list.append_last(*t);
@@ -405,7 +409,6 @@ int main() {
 						}
 						else
 						{	
-							//stack.get_last()._operator->n_numbers = commas;
 							list.append_last(stack.get_last());
 							stack.remove_last();
 						}
@@ -420,7 +423,6 @@ int main() {
 						list.append_last(stack.get_last());
 						stack.remove_last();
 					}
-					//commas++;
 					stack.append_last(*t);
 					break;
 				default:
@@ -444,7 +446,7 @@ int main() {
 		list.Print_first_to_last();
 		while (true)
 		{
-			int result;
+			//int result;
 			if (list.get_first().number)
 			{
 				stack.append_last(list.get_first());
@@ -494,7 +496,8 @@ int main() {
 					{
 						cout << "ERROR";
 					}
-					else {
+					else 
+					{
 						stack.remove_last();
 						number2 = stack.get_last().number;
 						stack.remove_last();
