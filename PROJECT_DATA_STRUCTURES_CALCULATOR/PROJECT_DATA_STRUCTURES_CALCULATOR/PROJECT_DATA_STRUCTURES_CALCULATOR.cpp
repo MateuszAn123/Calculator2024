@@ -517,7 +517,7 @@ int main() {
 					stack.remove_last();
 					number3 = stack.get_last().number;
 					stack.remove_last();
-					result = function_IF(number3, number2, number1);
+					result = (number3>0 ? number2 : number1);
 					list.append_first(result);
 					break;
 				case MAX:
