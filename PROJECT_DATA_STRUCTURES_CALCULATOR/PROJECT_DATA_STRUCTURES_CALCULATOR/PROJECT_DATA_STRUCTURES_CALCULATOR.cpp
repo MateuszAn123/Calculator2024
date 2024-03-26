@@ -224,10 +224,9 @@ public:
 
 
 template <typename T> class LinkedList {
-private:
+public:
 	Node<T>* head;
 	Node<T>* tail;
-public:
 	int number_elements = 0;
 	LinkedList() : head(nullptr), tail(nullptr) {
 	}
@@ -350,15 +349,16 @@ int function_IF(int n1, int n2, int n3)
 
 
 int main() {
+	bool max_min = false;
 	int number1 = 0;
 	int number2 = 0;
 	int number3 = 0;
-	int commas = 0;
+	int commas = 1;
 	int how_many;
 	int max_or_min = 0;
 	cin >> how_many;
 	char input[MAX_INT_LENGTH];
-	int result = 0;
+	int result;
 	for (int i = 0; i < how_many; i++)
 	{
 		LinkedList<Token> list;
@@ -371,6 +371,11 @@ int main() {
 			{
 				while (!stack.isEmpty())
 				{
+					if (stack.get_last()._operator->operator_type == MAX || stack.get_last()._operator->operator_type == MIN)
+					{
+						//stack.get_last()._operator->n_numbers = commas;
+						commas = 1;
+					}
 					list.append_last(stack.get_last());
 					stack.remove_last();
 				}
@@ -386,6 +391,7 @@ int main() {
 				Token* t = new Token(input);
 				switch (input[0]) {
 				case '(':
+					stack.get_last()._operator->n_numbers = 1;
 					stack.append_last(*t);
 					break;
 				case ')':
@@ -395,14 +401,18 @@ int main() {
 						if (stack.get_last()._operator->operator_type == PRZECINEK)
 						{
 							stack.remove_last();
+							commas++;
 						}
 						else
-						{
+						{	
+							//stack.get_last()._operator->n_numbers = commas;
 							list.append_last(stack.get_last());
 							stack.remove_last();
 						}
 					}
 					stack.remove_last();
+					stack.get_last()._operator->n_numbers = commas;
+					commas = 1;
 					break;
 				case ',':
 					while (stack.get_last()._operator->operator_type != OPEN && stack.get_last()._operator->operator_type != PRZECINEK)
@@ -410,25 +420,16 @@ int main() {
 						list.append_last(stack.get_last());
 						stack.remove_last();
 					}
-					commas++;
+					//commas++;
 					stack.append_last(*t);
 					break;
 				default:
 					if ((stack.isEmpty()) || (t->_operator->index > stack.get_last()._operator->index))
 					{
-						if (stack.get_last()._operator->operator_type == MAX || stack.get_last()._operator->operator_type == MIN)
-						{
-							stack.get_last()._operator->n_numbers = commas+1;
-						}
 						stack.append_last(*t);
 					}
 					else if (t->_operator->index <= stack.get_last()._operator->index)
 					{
-						if (stack.get_last()._operator->operator_type == MAX || stack.get_last()._operator->operator_type == MIN)
-						{
-							stack.get_last()._operator->n_numbers = commas + 1;
-							commas = 0;
-						}
 						while (!stack.isEmpty() && t->_operator->index <= stack.get_last()._operator->index && stack.get_last()._operator->index != 4)
 						{
 							list.append_last(stack.get_last());
@@ -440,10 +441,10 @@ int main() {
 				}
 			}
 		}
-		cout << commas << endl;
 		list.Print_first_to_last();
 		while (true)
 		{
+			int result;
 			if (list.get_first().number)
 			{
 				stack.append_last(list.get_first());
@@ -489,11 +490,17 @@ int main() {
 				case DIV:
 					stack.remove_last();
 					number1 = stack.get_last().number;
-					stack.remove_last();
-					number2 = stack.get_last().number;
-					stack.remove_last();
-					result = number2 / number1;
-					list.append_first(result);
+					if (number1 == 0)
+					{
+						cout << "ERROR";
+					}
+					else {
+						stack.remove_last();
+						number2 = stack.get_last().number;
+						stack.remove_last();
+						result = number2 / number1;
+						list.append_first(result);
+					}
 					break;
 				case N:
 					stack.remove_last();
@@ -514,19 +521,29 @@ int main() {
 					list.append_first(result);
 					break;
 				case MAX:
-					////////////////
-					result = 0;
+					max_or_min = stack.get_last()._operator->n_numbers;
+					stack.remove_last();
+					result = stack.get_last().number;
+					stack.remove_last();
+					for (int i = 0; i < max_or_min-1; i++)
+					{
+						if (stack.get_last().number > result)
+							result = stack.get_last().number;
+						stack.remove_last();
+					}
 					list.append_first(result);
 					break;
 				case MIN:
+					max_or_min = stack.get_last()._operator->n_numbers;
 					stack.remove_last();
-					number1 = stack.get_last().number;
+					result = stack.get_last().number;
 					stack.remove_last();
-					number2 = stack.get_last().number;
-					stack.remove_last();
-					number3 = stack.get_last().number;
-					stack.remove_last();
-					result = function_IF(number3, number2, number1);
+					for (int i = 0 ; i < max_or_min-1; i++)
+					{
+						if (stack.get_last().number < result)
+							result = stack.get_last().number;
+						stack.remove_last();
+					}
 					list.append_first(result);
 					break;
 				}
@@ -537,8 +554,6 @@ int main() {
 				list.remove_first();
 				break;
 			}
-
-
 		}
 	}
 	return 0;
