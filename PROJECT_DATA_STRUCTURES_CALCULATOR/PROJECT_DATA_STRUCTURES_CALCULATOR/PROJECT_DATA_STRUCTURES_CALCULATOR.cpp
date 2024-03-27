@@ -355,6 +355,7 @@ int main() {
 	int number3 = 0;
 	int commas = 1;
 	int how_many;
+	bool if_error = false;
 	int max_or_min = 0;
 	cin >> how_many;
 	char input[MAX_INT_LENGTH];
@@ -381,11 +382,6 @@ int main() {
 				break;
 			}
 			else if (isNumber(input[0]))
-			{
-				Token* t = new Token(input);
-				list.append_last(*t);
-			}
-			else if (input[0]=='0')
 			{
 				Token* t = new Token(input);
 				list.append_last(*t);
@@ -446,14 +442,14 @@ int main() {
 		list.Print_first_to_last();
 		while (true)
 		{
-			//int result;
 			if (list.get_first().number)
 			{
 				stack.append_last(list.get_first());
-				list.remove_first();
+				list.remove_first();			
 			}
-			else if (list.get_first() == PRZECINEK)
+			else if (list.get_first() == 0)
 			{
+				stack.append_last(list.get_first());
 				list.remove_first();
 			}
 			else
@@ -492,19 +488,19 @@ int main() {
 				case DIV:
 					stack.remove_last();
 					number1 = stack.get_last().number;
+					stack.remove_last();
+					number2 = stack.get_last().number;
+					stack.remove_last();
 					if (number1 == 0)
 					{
-						cout << "ERROR";
+						if_error = true;
+						result = 0;
 					}
-					else 
-					{
-						stack.remove_last();
-						number2 = stack.get_last().number;
-						stack.remove_last();
+					else {
 						result = number2 / number1;
-						list.append_first(result);
 					}
-					break;
+					list.append_first(result);
+					break;					
 				case N:
 					stack.remove_last();
 					number1 = stack.get_last().number;
@@ -528,7 +524,7 @@ int main() {
 					stack.remove_last();
 					result = stack.get_last().number;
 					stack.remove_last();
-					for (int i = 0; i < max_or_min-1; i++)
+					for (int j = 0; j < max_or_min-1; j++)
 					{
 						if (stack.get_last().number > result)
 							result = stack.get_last().number;
@@ -541,7 +537,7 @@ int main() {
 					stack.remove_last();
 					result = stack.get_last().number;
 					stack.remove_last();
-					for (int i = 0 ; i < max_or_min-1; i++)
+					for (int j = 0 ; j < max_or_min-1; j++)
 					{
 						if (stack.get_last().number < result)
 							result = stack.get_last().number;
@@ -551,7 +547,13 @@ int main() {
 					break;
 				}
 			}
-			if (list.number_elements == 1 && list.get_first().number)
+			if (if_error)
+			{
+				cout << "ERROR\n\n";
+				if_error = false;
+				break;
+			}
+			else if (list.number_elements == 1 && (list.get_first().number || list.get_first()==0))
 			{
 				cout << list.get_first() << endl << endl;
 				list.remove_first();
